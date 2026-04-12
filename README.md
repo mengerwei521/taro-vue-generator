@@ -260,7 +260,7 @@ npm install
 # 调试
 # 按 F5 启动调试
 ```
-
+## vsce package 打包
 ## 许可证
 
 MIT

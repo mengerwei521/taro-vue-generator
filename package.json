@@ -2,6 +2,8 @@
   "name": "taro-vue-generator",
   "displayName": "Taro Vue Generator",
   "description": "为 Taro + Vue 项目提供右键菜单驱动的代码生成工具",
+  "publisher": "webmeng",
+  "icon": "images/logo.png",
   "version": "1.0.0",
   "engines": {
     "vscode": "^1.75.0"
