@@ -1,0 +1,120 @@
+{
+  "name": "taro-vue-generator",
+  "displayName": "Taro Vue Generator",
+  "description": "为 Taro + Vue 项目提供右键菜单驱动的代码生成工具",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./src/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "taroVue.generatePage",
+        "title": "生成页面"
+      },
+      {
+        "command": "taroVue.generateComponent",
+        "title": "生成组件"
+      },
+      {
+        "command": "taroVue.generatePageCustom",
+        "title": "生成页面（自定义配置）"
+      },
+      {
+        "command": "taroVue.generateComponentCustom",
+        "title": "生成组件（自定义配置）"
+      },
+      {
+        "command": "taroVue.selectTemplate",
+        "title": "配置默认选项"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "submenu": "taroVue.submenu",
+          "group": "taro"
+        }
+      ],
+      "taroVue.submenu": [
+        {
+          "command": "taroVue.generatePage",
+          "group": "generate@1"
+        },
+        {
+          "command": "taroVue.generateComponent",
+          "group": "generate@2"
+        },
+        {
+          "command": "taroVue.generatePageCustom",
+          "group": "generate@3"
+        },
+        {
+          "command": "taroVue.generateComponentCustom",
+          "group": "generate@4"
+        },
+        {
+          "command": "taroVue.selectTemplate",
+          "group": "config@1"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "taroVue.submenu",
+        "label": "⚡ Taro Vue Generator"
+      }
+    ],
+    "configuration": {
+      "title": "Taro Vue Generator",
+      "properties": {
+        "taroVue.template.vueVersion": {
+          "type": "string",
+          "default": "vue3",
+          "enum": [
+            "vue2",
+            "vue3"
+          ],
+          "description": "Vue 版本"
+        },
+        "taroVue.template.language": {
+          "type": "string",
+          "default": "javascript",
+          "enum": [
+            "javascript",
+            "typescript"
+          ],
+          "description": "脚本语言"
+        },
+        "taroVue.template.style": {
+          "type": "string",
+          "default": "scss",
+          "enum": [
+            "scss",
+            "less"
+          ],
+          "description": "样式预处理器"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0",
+    "@types/glob": "^8.1.0",
+    "eslint": "^8.36.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {}
+}
