@@ -4,7 +4,7 @@
   "description": "为 Taro + Vue 项目提供右键菜单驱动的代码生成工具",
   "publisher": "webmeng",
   "icon": "images/logo.png",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -69,7 +69,7 @@
     "submenus": [
       {
         "id": "taroVue.submenu",
-        "label": "⚡ Taro Vue Generator"
+        "label": "Taro Vue Generator"
       }
     ],
     "configuration": {

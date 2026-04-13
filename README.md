@@ -4,7 +4,7 @@
 
 ## 功能特性
 
-- ✅ 在任意文件夹右键生成页面或组件
+- ✅ 在任意文件夹右键生成页面或组件-[注意页面只能在pages文件下生成，组件无所谓]
 - ✅ 交互式输入名称（自动校验格式）
 - ✅ 自动创建文件夹和文件结构
 - ✅ 内置默认模板（Vue3 + JavaScript + SCSS）
@@ -21,12 +21,12 @@
 
 或者使用 VSIX 安装：
 ```bash
-code --install taro-vue-generator-1.0.0.vsix
+code --install taro-vue-generator-x.x.x.vsix
 ```
 
 ## 使用方法
 
-在资源管理器中右键点击文件夹，选择 **"⚡ Taro Vue Generator"** 子菜单：
+在资源管理器中右键点击文件夹，选择 **"Taro Vue Generator"** 子菜单：
 
 ### 快速生成（使用默认配置）
 
@@ -45,7 +45,7 @@ code --install taro-vue-generator-1.0.0.vsix
 ### 生成步骤
 
 1. 右键点击目标文件夹
-2. 选择 "⚡ Taro Vue Generator" → 选择对应功能
+2. 选择 "Taro Vue Generator" → 选择对应功能
 3. （可选）选择配置选项
 4. 输入页面/组件名称（如：home-module）
 5. 自动生成文件并打开编辑器
@@ -84,6 +84,7 @@ code --install taro-vue-generator-1.0.0.vsix
 
 `.vscode-taro-templates/page.vue`:
 ```vue
+<!--  - 路由: {{routePath}} -->
 <template>
   <view class="{{kebabName}}-page">
     <text>{{PascalName}} Page</text>
@@ -111,6 +112,7 @@ defineOptions({
 
 `.vscode-taro-templates/component.vue`:
 ```vue
+<!--  - 路由: {{routePath}} -->
 <template>
   <view class="{{kebabName}}-component">
     <text>{{PascalName}}</text>
@@ -169,49 +171,6 @@ src/components/custom-button/
 └── index.vue          # 组件主文件
 ```
 
-## 模板示例
-
-### Vue3 + JavaScript 页面模板
-
-```vue
-<template>
-  <view class="my-page">
-    <view class="my-page__content">
-      <text class="my-page__title">MyPage</text>
-    </view>
-  </view>
-</template>
-
-<script setup>
-import { ref, onMounted } from 'vue'
-import Taro from '@tarojs/taro'
-
-defineOptions({
-  name: 'MyPage'
-})
-
-const loading = ref(false)
-
-onMounted(() => {
-  console.log('MyPage 页面已加载')
-})
-
-const handleClick = () => {
-  console.log('点击了MyPage页面')
-}
-</script>
-
-<style lang="scss">
-.my-page {
-  min-height: 100vh;
-  // ...
-}
-</style>
-```
-
-### Vue2 + TypeScript 组件模板
-
-```vue
 <template>
   <view class="my-component">
     <text class="my-component__text">MyComponent</text>
