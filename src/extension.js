@@ -74,13 +74,15 @@ function loadCustomTemplate(projectRoot, type) {
  * @param {string} kebabName - 短横线命名
  * @param {string} pascalName - 大驼峰命名
  * @param {string} camelName - 小驼峰命名
+ * @param {string} routePath - 路由路径（如 pages/xxx/index 或 aa/pages/xxx/index）
  * @returns {string} 替换后的内容
  */
-function replaceTemplatePlaceholders(template, kebabName, pascalName, camelName) {
+function replaceTemplatePlaceholders(template, kebabName, pascalName, camelName, routePath = '') {
   return template
     .replace(/\{\{kebabName\}\}/g, kebabName)
     .replace(/\{\{PascalName\}\}/g, pascalName)
-    .replace(/\{\{camelName\}\}/g, camelName);
+    .replace(/\{\{camelName\}\}/g, camelName)
+    .replace(/\{\{routePath\}\}/g, routePath);
 }
 
 /**
@@ -444,20 +446,29 @@ async function handleGenerate(uri, type, isCustom = false) {
   const pascalName = templates.kebabToPascal(name);
   const camelName = templates.kebabToCamel(name);
 
+  // 计算路由路径
+  const appConfigPath = findAppConfig(targetPath);
+  let routePath = '';
+  if (appConfigPath) {
+    const srcPath = path.dirname(appConfigPath);
+    const relativePath = path.relative(srcPath, componentDir);
+    routePath = relativePath.replace(/\\/g, '/') + '/index';
+  }
+
   if (type === 'page') {
     // 尝试加载自定义页面模板
     let vueTemplate = null;
     if (projectRoot) {
       const customTemplate = loadCustomTemplate(projectRoot, 'page');
       if (customTemplate) {
-        vueTemplate = replaceTemplatePlaceholders(customTemplate, name, pascalName, camelName);
+        vueTemplate = replaceTemplatePlaceholders(customTemplate, name, pascalName, camelName, routePath);
         vscode.window.showInformationMessage('已使用自定义页面模板');
       }
     }
 
     // 如果没有自定义模板，使用内置模板
     if (!vueTemplate) {
-      vueTemplate = templates.getPageVueTemplate(name, { vueVersion, language, style });
+      vueTemplate = templates.getPageVueTemplate(name, { vueVersion, language, style }, routePath);
     }
 
     const configTemplate = templates.getPageConfigTemplate(name);
@@ -474,14 +485,14 @@ async function handleGenerate(uri, type, isCustom = false) {
     if (projectRoot) {
       const customTemplate = loadCustomTemplate(projectRoot, 'component');
       if (customTemplate) {
-        vueTemplate = replaceTemplatePlaceholders(customTemplate, name, pascalName, camelName);
+        vueTemplate = replaceTemplatePlaceholders(customTemplate, name, pascalName, camelName, routePath);
         vscode.window.showInformationMessage('已使用自定义组件模板');
       }
     }
 
     // 如果没有自定义模板，使用内置模板
     if (!vueTemplate) {
-      vueTemplate = templates.getComponentTemplate(name, { vueVersion, language, style });
+      vueTemplate = templates.getComponentTemplate(name, { vueVersion, language, style }, routePath);
     }
 
     filesToCreate.push(

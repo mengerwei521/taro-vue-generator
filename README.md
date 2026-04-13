@@ -78,6 +78,7 @@ code --install taro-vue-generator-1.0.0.vsix
 | `{{kebabName}}` | 短横线命名 | `user-profile` |
 | `{{PascalName}}` | 大驼峰命名 | `UserProfile` |
 | `{{camelName}}` | 小驼峰命名 | `userProfile` |
+| `{{routePath}}` | 路由路径 | `pages/home/user-profile/index` 或 `pageModule/pages/home/user-profile/index` |
 
 ### 自定义页面模板示例
 

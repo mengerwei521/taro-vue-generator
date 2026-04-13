@@ -31,18 +31,20 @@ function kebabToCamel(str) {
  * @param {'vue2' | 'vue3'} options.vueVersion - Vue 版本
  * @param {'javascript' | 'typescript'} options.language - 脚本语言
  * @param {'scss' | 'less'} options.style - 样式预处理器
+ * @param {string} routePath - 路由路径（如 pages/xxx/index 或 aa/pages/xxx/index）
  * @returns {string} 生成的模板内容
  */
-function getPageVueTemplate(name, options) {
+function getPageVueTemplate(name, options, routePath = '') {
   const { vueVersion = 'vue3', language = 'javascript', style = 'scss' } = options;
   const pascalName = kebabToPascal(name);
   const camelName = kebabToCamel(name);
   const scriptExt = language === 'typescript' ? 'ts' : 'js';
   const styleLang = style === 'scss' ? 'scss' : 'less';
+  const routeComment = routePath ? ` - 路由: ${routePath}` : '';
 
   if (vueVersion === 'vue3') {
     if (language === 'typescript') {
-      return `<!-- ${pascalName} 页面 -->
+      return `<!-- ${pascalName} 页面${routeComment} -->
 <template>
   <view class="${name}-page">
   
@@ -78,7 +80,7 @@ const handleClick = (): void => {
 </style>
 `;
     } else {
-      return `<!-- ${pascalName} 页面 -->
+      return `<!-- ${pascalName} 页面${routeComment} -->
 <template>
   <view class="${name}-page">
  
@@ -118,7 +120,7 @@ const handleClick = () => {
   } else {
     // Vue 2
     if (language === 'typescript') {
-      return `<!-- ${pascalName} 页面 -->
+      return `<!-- ${pascalName} 页面${routeComment} -->
 <template>
   <view class="${name}-page">
   
@@ -155,7 +157,7 @@ export default class ${pascalName} extends Vue {
 </style>
 `;
     } else {
-      return `<!-- ${pascalName} 页面 -->
+      return `<!-- ${pascalName} 页面${routeComment} -->
 <template>
   <view class="${name}-page">
   
@@ -206,18 +208,20 @@ export default {
  * @param {'vue2' | 'vue3'} options.vueVersion - Vue 版本
  * @param {'javascript' | 'typescript'} options.language - 脚本语言
  * @param {'scss' | 'less'} options.style - 样式预处理器
+ * @param {string} routePath - 路由路径（如 pages/xxx/index 或 aa/pages/xxx/index）
  * @returns {string} 生成的模板内容
  */
-function getComponentTemplate(name, options) {
+function getComponentTemplate(name, options, routePath = '') {
   const { vueVersion = 'vue3', language = 'javascript', style = 'scss' } = options;
   const pascalName = kebabToPascal(name);
   const camelName = kebabToCamel(name);
   const scriptExt = language === 'typescript' ? 'ts' : 'js';
   const styleLang = style === 'scss' ? 'scss' : 'less';
+  const routeComment = routePath ? ` - 路由: ${routePath}` : '';
 
   if (vueVersion === 'vue3') {
     if (language === 'typescript') {
-      return `<!-- ${pascalName} 组件 -->
+      return `<!-- ${pascalName} 组件${routeComment} -->
 <template>
   <view class="${name}-component">
   </view>
@@ -272,7 +276,7 @@ const handleClick = (): void => {
 </style>
 `;
     } else {
-      return `<!-- ${pascalName} 组件 -->
+      return `<!-- ${pascalName} 组件${routeComment} -->
 <template>
   <view class="${name}-component">
   </view>
@@ -326,7 +330,7 @@ const handleClick = () => {
   } else {
     // Vue 2
     if (language === 'typescript') {
-      return `<!-- ${pascalName} 组件 -->
+      return `<!-- ${pascalName} 组件${routeComment} -->
 <template>
   <view class="${name}-component">
   </view>
@@ -371,7 +375,7 @@ export default class ${pascalName} extends Vue {
 </style>
 `;
     } else {
-      return `<!-- ${pascalName} 组件 -->
+      return `<!-- ${pascalName} 组件${routeComment} -->
 <template>
   <view class="${name}-component">
   </view>
