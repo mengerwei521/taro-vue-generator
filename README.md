@@ -8,7 +8,7 @@
 - ✅ 交互式输入名称（自动校验格式）
 - ✅ 自动创建文件夹和文件结构
 - ✅ 内置默认模板（Vue3 + JavaScript + SCSS）
-- ✅ 支持模板切换（Vue2/Vue3 + TS/JS + SCSS/Less）
+- ✅ 支持模板切换（Vue2/Vue3 + TS/JS + SCSS/Less/Sass）
 - ✅ 生成后自动打开新文件
 - ✅ 自动将页面路由注册到 app.config.js/ts 中
 - ✅ **支持自定义 .vue 模板**（项目级模板覆盖）
@@ -28,7 +28,7 @@
 
 或者使用 VSIX 安装：
 ```bash
-code --install taro-vue-generator-x.x.x.vsix
+code --install taro-vue-generator-1.0.3.vsix
 ```
 
 ## 使用方法
@@ -86,6 +86,7 @@ code --install taro-vue-generator-x.x.x.vsix
 | `{{PascalName}}` | 大驼峰命名 | `UserProfile` |
 | `{{camelName}}` | 小驼峰命名 | `userProfile` |
 | `{{routePath}}` | 路由路径 | `pages/home/user-profile/index` 或 `pageModule/pages/home/user-profile/index` |
+| `{{styleExt}}` | 样式文件扩展名 | `scss`、`less` 或 `sass` |
 
 ### 自定义页面模板示例
 
@@ -93,13 +94,14 @@ code --install taro-vue-generator-x.x.x.vsix
 ```vue
 <!--  - 路由: {{routePath}} -->
 <template>
-  <view class="{{kebabName}}-page">
+  <view :class="styles['{{kebabName}}-page']">
     <text>{{PascalName}} Page</text>
   </view>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import styles from './index.module.{{styleExt}}'
 
 defineOptions({
   name: '{{PascalName}}'
@@ -107,12 +109,6 @@ defineOptions({
 
 // 自定义逻辑
 </script>
-
-<style lang="scss" scoped>
-.{{kebabName}}-page {
-  // 自定义样式
-}
-</style>
 ```
 
 ### 自定义组件模板示例
@@ -121,12 +117,14 @@ defineOptions({
 ```vue
 <!--  - 路由: {{routePath}} -->
 <template>
-  <view class="{{kebabName}}-component">
+  <view :class="styles['{{kebabName}}-component']">
     <text>{{PascalName}}</text>
   </view>
 </template>
 
 <script setup>
+import styles from './index.module.{{styleExt}}'
+
 defineOptions({
   name: '{{PascalName}}'
 })
@@ -135,20 +133,32 @@ const props = defineProps({
   title: String
 })
 </script>
-
-<style lang="scss" scoped>
-.{{kebabName}}-component {
-  // 自定义样式
-}
-</style>
 ```
 
 ### 注意事项
 
 - 自定义模板只影响 `.vue` 文件内容
-- `.config.js` 和样式文件（`.scss`/`.less`）仍使用内置模板
+- `.config.js` 和样式文件（`.module.scss`/`.module.less`/`.module.sass`）仍使用内置模板
 - 如果未创建自定义模板文件，插件会使用内置默认模板
 - 使用自定义模板生成文件时会弹出提示："已使用自定义页面/组件模板"
+
+## 样式说明（CSS Modules）
+
+生成的样式文件采用 **CSS Modules** 命名（`index.module.scss/less/sass`），在 `.vue` 中作为对象引入，模板里用 `:class="styles['类名']"` 引用：
+
+```vue
+<script setup>
+import styles from './index.module.scss'
+</script>
+
+<template>
+  <view :class="styles['custom-button-component']"></view>
+</template>
+```
+
+- Vue 3 `<script setup>`：`styles` 顶层变量自动可在模板中使用
+- Vue 2（Options API）：需在 `data()` 返回 `styles` 暴露给模板
+- Vue 2（class 组件）：需在类中声明 `styles = styles` 属性
 
 ## 命名规范
 
@@ -166,7 +176,7 @@ const props = defineProps({
 src/pages/home-module/user-profile/
 ├── index.vue          # 页面主文件
 ├── index.config.js    # 页面配置
-└── index.scss         # 样式文件
+└── index.module.scss  # 样式文件
 ```
 
 ### 生成组件
@@ -175,22 +185,28 @@ src/pages/home-module/user-profile/
 
 ```
 src/components/custom-button/
-└── index.vue          # 组件主文件
+├── index.vue          # 组件主文件
+├── index.config.js    # 组件配置
+└── index.module.scss  # 样式文件
 ```
 
+```vue
 <template>
-  <view class="my-component">
-    <text class="my-component__text">MyComponent</text>
+  <view :class="styles['my-component']">
+    <text :class="styles['my-component__text']">MyComponent</text>
   </view>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
+import styles from './index.module.scss'
 
 @Component({
   name: 'MyComponent'
 })
 export default class MyComponent extends Vue {
+  styles = styles
+
   @Prop({ type: String, default: '' })
   private title!: string
 
@@ -209,13 +225,6 @@ export default class MyComponent extends Vue {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.my-component {
-  padding: 20px;
-  // ...
-}
-</style>
 ```
 
 ## 开发
@@ -227,7 +236,7 @@ npm install
 # 调试
 # 按 F5 启动调试
 ```
-## vsce package 打包
+## vsce package 打包成vsix
 ## 许可证
 
 MIT

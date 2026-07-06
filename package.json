@@ -4,7 +4,7 @@
   "description": "为 Taro + Vue 项目提供右键菜单驱动的代码生成工具",
   "publisher": "webmeng",
   "icon": "images/logo.png",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -98,7 +98,8 @@
           "default": "scss",
           "enum": [
             "scss",
-            "less"
+            "less",
+            "sass"
           ],
           "description": "样式预处理器"
         }

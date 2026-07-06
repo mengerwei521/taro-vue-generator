@@ -75,14 +75,16 @@ function loadCustomTemplate(projectRoot, type) {
  * @param {string} pascalName - 大驼峰命名
  * @param {string} camelName - 小驼峰命名
  * @param {string} routePath - 路由路径（如 pages/xxx/index 或 aa/pages/xxx/index）
+ * @param {string} styleExt - 样式文件扩展名（scss/less/sass）
  * @returns {string} 替换后的内容
  */
-function replaceTemplatePlaceholders(template, kebabName, pascalName, camelName, routePath = '') {
+function replaceTemplatePlaceholders(template, kebabName, pascalName, camelName, routePath = '', styleExt = '') {
   return template
-    .replace(/\{\{kebabName\}\}/g, kebabName)
-    .replace(/\{\{PascalName\}\}/g, pascalName)
-    .replace(/\{\{camelName\}\}/g, camelName)
-    .replace(/\{\{routePath\}\}/g, routePath);
+    .replace(/\{\{\s*kebabName\s*\}\}/g, kebabName)
+    .replace(/\{\{\s*PascalName\s*\}\}/g, pascalName)
+    .replace(/\{\{\s*camelName\s*\}\}/g, camelName)
+    .replace(/\{\{\s*routePath\s*\}\}/g, routePath)
+    .replace(/\{\{\s*styleExt\s*\}\}/g, styleExt);
 }
 
 /**
@@ -552,7 +554,8 @@ async function handleGenerate(uri, type, isCustom = false) {
     const selectedStyle = await vscode.window.showQuickPick(
       [
         { label: 'SCSS', value: 'scss' },
-        { label: 'Less', value: 'less' }
+        { label: 'Less', value: 'less' },
+        { label: 'Sass', value: 'sass' }
       ],
       { placeHolder: '选择样式预处理器' }
     );
@@ -622,7 +625,7 @@ async function handleGenerate(uri, type, isCustom = false) {
     if (projectRoot) {
       const customTemplate = loadCustomTemplate(projectRoot, 'page');
       if (customTemplate) {
-        vueTemplate = replaceTemplatePlaceholders(customTemplate, name, pascalName, camelName, routePath);
+        vueTemplate = replaceTemplatePlaceholders(customTemplate, name, pascalName, camelName, routePath, style);
         vscode.window.setStatusBarMessage('已使用自定义页面模板', 3000);
       }
     }
@@ -638,7 +641,7 @@ async function handleGenerate(uri, type, isCustom = false) {
     filesToCreate.push(
       { path: path.join(componentDir, 'index.vue'), content: vueTemplate },
       { path: path.join(componentDir, 'index.config.js'), content: configTemplate },
-      { path: path.join(componentDir, `index.${style === 'scss' ? 'scss' : 'less'}`), content: styleTemplate }
+      { path: path.join(componentDir, `index.module.${style}`), content: styleTemplate }
     );
   } else {
     // 尝试加载自定义组件模板
@@ -646,7 +649,7 @@ async function handleGenerate(uri, type, isCustom = false) {
     if (projectRoot) {
       const customTemplate = loadCustomTemplate(projectRoot, 'component');
       if (customTemplate) {
-        vueTemplate = replaceTemplatePlaceholders(customTemplate, name, pascalName, camelName, routePath);
+        vueTemplate = replaceTemplatePlaceholders(customTemplate, name, pascalName, camelName, routePath, style);
         vscode.window.setStatusBarMessage('已使用自定义组件模板', 3000);
       }
     }
@@ -656,8 +659,13 @@ async function handleGenerate(uri, type, isCustom = false) {
       vueTemplate = templates.getComponentTemplate(name, { vueVersion, language, style }, routePath);
     }
 
+    const configTemplate = templates.getComponentConfigTemplate(name);
+    const styleTemplate = templates.getComponentStyleTemplate(name, style);
+
     filesToCreate.push(
-      { path: path.join(componentDir, 'index.vue'), content: vueTemplate }
+      { path: path.join(componentDir, 'index.vue'), content: vueTemplate },
+      { path: path.join(componentDir, 'index.config.js'), content: configTemplate },
+      { path: path.join(componentDir, `index.module.${style}`), content: styleTemplate }
     );
   }
 
@@ -730,7 +738,8 @@ async function handleSelectTemplate() {
   const style = await vscode.window.showQuickPick(
     [
       { label: 'SCSS', value: 'scss' },
-      { label: 'Less', value: 'less' }
+      { label: 'Less', value: 'less' },
+      { label: 'Sass', value: 'sass' }
     ],
     { placeHolder: '选择样式预处理器' }
   );

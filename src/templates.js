@@ -30,7 +30,7 @@ function kebabToCamel(str) {
  * @param {Object} options - 模板选项
  * @param {'vue2' | 'vue3'} options.vueVersion - Vue 版本
  * @param {'javascript' | 'typescript'} options.language - 脚本语言
- * @param {'scss' | 'less'} options.style - 样式预处理器
+ * @param {'scss' | 'less' | 'sass'} options.style - 样式预处理器
  * @param {string} routePath - 路由路径（如 pages/xxx/index 或 aa/pages/xxx/index）
  * @returns {string} 生成的模板内容
  */
@@ -39,21 +39,21 @@ function getPageVueTemplate(name, options, routePath = '') {
   const pascalName = kebabToPascal(name);
   const camelName = kebabToCamel(name);
   const scriptExt = language === 'typescript' ? 'ts' : 'js';
-  const styleLang = style === 'scss' ? 'scss' : 'less';
   const routeComment = routePath ? ` - 路由: ${routePath}` : '';
 
   if (vueVersion === 'vue3') {
     if (language === 'typescript') {
       return `<!-- ${pascalName} 页面${routeComment} -->
 <template>
-  <view class="${name}-page">
-  
+  <view :class="styles['${name}-page']">
+
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import Taro from '@tarojs/taro'
+import styles from './index.module.${style}'
 
 // 页面配置
 defineOptions({
@@ -73,23 +73,19 @@ const handleClick = (): void => {
   console.log('点击了${pascalName}页面')
 }
 </script>
-
-<style lang="${styleLang}">
-.${name}-page {
-}
-</style>
 `;
     } else {
       return `<!-- ${pascalName} 页面${routeComment} -->
 <template>
-  <view class="${name}-page">
- 
+  <view :class="styles['${name}-page']">
+
   </view>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import Taro from '@tarojs/taro'
+import styles from './index.module.${style}'
 
 // 页面配置
 defineOptions({
@@ -109,12 +105,6 @@ const handleClick = () => {
   console.log('点击了${pascalName}页面')
 }
 </script>
-
-<style lang="${styleLang}">
-.${name}-page {
-
-}
-</style>
 `;
     }
   } else {
@@ -122,19 +112,23 @@ const handleClick = () => {
     if (language === 'typescript') {
       return `<!-- ${pascalName} 页面${routeComment} -->
 <template>
-  <view class="${name}-page">
-  
+  <view :class="styles['${name}-page']">
+
   </view>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import Taro from '@tarojs/taro'
+import styles from './index.module.${style}'
 
 @Component({
   name: '${pascalName}'
 })
 export default class ${pascalName} extends Vue {
+  // CSS Modules（暴露给模板）
+  styles = styles
+
   // 响应式数据
   private loading: boolean = false
 
@@ -149,30 +143,26 @@ export default class ${pascalName} extends Vue {
   }
 }
 </script>
-
-<style lang="${styleLang}">
-.${name}-page {
-  
-}
-</style>
 `;
     } else {
       return `<!-- ${pascalName} 页面${routeComment} -->
 <template>
-  <view class="${name}-page">
-  
+  <view :class="styles['${name}-page']">
+
   </view>
 </template>
 
 <script>
 import Taro from '@tarojs/taro'
+import styles from './index.module.${style}'
 
 export default {
   name: '${pascalName}',
-  
+
   // 响应式数据
   data() {
     return {
+      styles,
       loading: false
     }
   },
@@ -190,12 +180,6 @@ export default {
   }
 }
 </script>
-
-<style lang="${styleLang}">
-.${name}-page {
- 
-}
-</style>
 `;
     }
   }
@@ -207,7 +191,7 @@ export default {
  * @param {Object} options - 模板选项
  * @param {'vue2' | 'vue3'} options.vueVersion - Vue 版本
  * @param {'javascript' | 'typescript'} options.language - 脚本语言
- * @param {'scss' | 'less'} options.style - 样式预处理器
+ * @param {'scss' | 'less' | 'sass'} options.style - 样式预处理器
  * @param {string} routePath - 路由路径（如 pages/xxx/index 或 aa/pages/xxx/index）
  * @returns {string} 生成的模板内容
  */
@@ -216,19 +200,19 @@ function getComponentTemplate(name, options, routePath = '') {
   const pascalName = kebabToPascal(name);
   const camelName = kebabToCamel(name);
   const scriptExt = language === 'typescript' ? 'ts' : 'js';
-  const styleLang = style === 'scss' ? 'scss' : 'less';
   const routeComment = routePath ? ` - 路由: ${routePath}` : '';
 
   if (vueVersion === 'vue3') {
     if (language === 'typescript') {
       return `<!-- ${pascalName} 组件${routeComment} -->
 <template>
-  <view class="${name}-component">
+  <view :class="styles['${name}-component']">
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import styles from './index.module.${style}'
 
 // 组件配置
 defineOptions({
@@ -269,21 +253,17 @@ const handleClick = (): void => {
   }
 }
 </script>
-
-<style lang="${styleLang}" scoped>
-.${name}-component {
-}
-</style>
 `;
     } else {
       return `<!-- ${pascalName} 组件${routeComment} -->
 <template>
-  <view class="${name}-component">
+  <view :class="styles['${name}-component']">
   </view>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
+import styles from './index.module.${style}'
 
 // 组件配置
 defineOptions({
@@ -320,11 +300,6 @@ const handleClick = () => {
   }
 }
 </script>
-
-<style lang="${styleLang}" scoped>
-.${name}-component {
-}
-</style>
 `;
     }
   } else {
@@ -332,17 +307,21 @@ const handleClick = () => {
     if (language === 'typescript') {
       return `<!-- ${pascalName} 组件${routeComment} -->
 <template>
-  <view class="${name}-component">
+  <view :class="styles['${name}-component']">
   </view>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
+import styles from './index.module.${style}'
 
 @Component({
   name: '${pascalName}'
 })
 export default class ${pascalName} extends Vue {
+  // CSS Modules（暴露给模板）
+  styles = styles
+
   // Props
   @Prop({ type: String, default: '' })
   private title!: string
@@ -368,23 +347,20 @@ export default class ${pascalName} extends Vue {
   }
 }
 </script>
-
-<style lang="${styleLang}" scoped>
-.${name}-component {
-}
-</style>
 `;
     } else {
       return `<!-- ${pascalName} 组件${routeComment} -->
 <template>
-  <view class="${name}-component">
+  <view :class="styles['${name}-component']">
   </view>
 </template>
 
 <script>
+import styles from './index.module.${style}'
+
 export default {
   name: '${pascalName}',
-  
+
   // Props
   props: {
     title: {
@@ -400,6 +376,7 @@ export default {
   // 响应式数据
   data() {
     return {
+      styles,
       isVisible: true
     }
   },
@@ -421,11 +398,6 @@ export default {
   }
 }
 </script>
-
-<style lang="${styleLang}" scoped>
-.${name}-component {
-}
-</style>
 `;
     }
   }
@@ -447,12 +419,57 @@ function getPageConfigTemplate(name) {
 /**
  * 获取页面样式文件内容
  * @param {string} name - 页面名称
- * @param {'scss' | 'less'} style - 样式预处理器
+ * @param {'scss' | 'less' | 'sass'} style - 样式预处理器
  * @returns {string} 样式文件内容
  */
 function getPageStyleTemplate(name, style) {
-  // 返回空样式，因为主要样式在 vue 文件中
-  return `// ${name} 页面额外样式
+  // 样式写在此文件中，由 .vue 通过 CSS Modules 引入
+  const className = `.${name}-page`;
+  if (style === 'sass') {
+    return `// ${name} 页面样式
+${className}
+  // 样式写这里
+`;
+  }
+  return `// ${name} 页面样式
+${className} {
+  // 样式写这里
+}
+`;
+}
+
+/**
+ * 获取组件配置文件内容
+ * @param {string} name - 组件名称
+ * @returns {string} 配置文件内容
+ */
+function getComponentConfigTemplate(name) {
+  return `export default defineComponentConfig({
+  component: true,
+  usingComponents: {}
+})
+`;
+}
+
+/**
+ * 获取组件样式文件内容
+ * @param {string} name - 组件名称
+ * @param {'scss' | 'less' | 'sass'} style - 样式预处理器
+ * @returns {string} 样式文件内容
+ */
+function getComponentStyleTemplate(name, style) {
+  // 样式写在此文件中，由 .vue 通过 CSS Modules 引入
+  const className = `.${name}-component`;
+  if (style === 'sass') {
+    return `// ${name} 组件样式
+${className}
+  // 样式写这里
+`;
+  }
+  return `// ${name} 组件样式
+${className} {
+  // 样式写这里
+}
 `;
 }
 
@@ -461,6 +478,8 @@ module.exports = {
   getComponentTemplate,
   getPageConfigTemplate,
   getPageStyleTemplate,
+  getComponentConfigTemplate,
+  getComponentStyleTemplate,
   kebabToPascal,
   kebabToCamel
 };
