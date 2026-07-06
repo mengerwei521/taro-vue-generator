@@ -439,19 +439,6 @@ ${className} {
 }
 
 /**
- * 获取组件配置文件内容
- * @param {string} name - 组件名称
- * @returns {string} 配置文件内容
- */
-function getComponentConfigTemplate(name) {
-  return `export default defineComponentConfig({
-  component: true,
-  usingComponents: {}
-})
-`;
-}
-
-/**
  * 获取组件样式文件内容
  * @param {string} name - 组件名称
  * @param {'scss' | 'less' | 'sass'} style - 样式预处理器
@@ -478,7 +465,6 @@ module.exports = {
   getComponentTemplate,
   getPageConfigTemplate,
   getPageStyleTemplate,
-  getComponentConfigTemplate,
   getComponentStyleTemplate,
   kebabToPascal,
   kebabToCamel

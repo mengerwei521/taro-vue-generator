@@ -186,7 +186,6 @@ src/pages/home-module/user-profile/
 ```
 src/components/custom-button/
 ├── index.vue          # 组件主文件
-├── index.config.js    # 组件配置
 └── index.module.scss  # 样式文件
 ```
 

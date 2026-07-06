@@ -189,15 +189,15 @@ function checkSubpackageByPagePath(pagePath, content) {
 function checkPageNameExists(appConfigPath, pageName) {
   try {
     const content = fs.readFileSync(appConfigPath, 'utf-8');
-    
+
     // 1. 先找到 subPackages 的位置，区分主包和分包的 pages 数组
     const subPackagesIndex = content.search(/subPackages\s*:/);
-    
+
     // 2. 检查主包 pages 数组（在 subPackages 之前）
     const mainPagesEnd = subPackagesIndex === -1 ? content.length : subPackagesIndex;
     const mainPagesSection = content.substring(0, mainPagesEnd);
     const mainPagesMatch = mainPagesSection.match(/pages\s*:\s*\[([\s\S]*?)\]/);
-    
+
     if (mainPagesMatch) {
       const paths = extractPathsFromPages(mainPagesMatch[1]);
       const foundPath = findPathByPageName(paths, pageName);
@@ -205,7 +205,7 @@ function checkPageNameExists(appConfigPath, pageName) {
         return { exists: true, location: '主包' };
       }
     }
-    
+
     // 3. 检查分包 pages 数组（在 subPackages 数组内部）
     if (subPackagesIndex !== -1) {
       const result = checkSubpackagePages(content, subPackagesIndex, pageName);
@@ -213,7 +213,7 @@ function checkPageNameExists(appConfigPath, pageName) {
         return result;
       }
     }
-    
+
     return { exists: false, location: null };
   } catch (error) {
     console.error('检查页面名称失败:', error.message);
@@ -266,7 +266,7 @@ function checkSubpackagePages(content, subPackagesIndex, pageName) {
   // 找到 subPackages 数组的起始 '['
   let arrayStart = content.indexOf('[', subPackagesIndex);
   if (arrayStart === -1) return null;
-  
+
   // 匹配方括号，找到数组结束位置
   let count = 1;
   let pos = arrayStart + 1;
@@ -278,7 +278,7 @@ function checkSubpackagePages(content, subPackagesIndex, pageName) {
   }
   const arrayEnd = pos - 1;
   const subPackagesContent = content.substring(arrayStart + 1, arrayEnd);
-  
+
   // 提取所有 root 值及其位置
   const rootRegex = /root\s*:\s*["']([^"']+)["']/g;
   const roots = [];
@@ -289,16 +289,16 @@ function checkSubpackagePages(content, subPackagesIndex, pageName) {
       index: rootMatch.index
     });
   }
-  
+
   // 对每个分包，检查其 pages 数组
   for (let i = 0; i < roots.length; i++) {
     const currentRoot = roots[i];
     const nextRootIndex = i + 1 < roots.length ? roots[i + 1].index : subPackagesContent.length;
-    
+
     // 在当前分包对象范围内查找 pages 数组
     const subpackageSection = subPackagesContent.substring(currentRoot.index, nextRootIndex);
     const pagesMatch = subpackageSection.match(/pages\s*:\s*\[([\s\S]*?)\]/);
-    
+
     if (pagesMatch) {
       const paths = extractPathsFromPages(pagesMatch[1]);
       const foundPath = findPathByPageName(paths, pageName);
@@ -307,7 +307,7 @@ function checkSubpackagePages(content, subPackagesIndex, pageName) {
       }
     }
   }
-  
+
   return null;
 }
 
@@ -659,12 +659,10 @@ async function handleGenerate(uri, type, isCustom = false) {
       vueTemplate = templates.getComponentTemplate(name, { vueVersion, language, style }, routePath);
     }
 
-    const configTemplate = templates.getComponentConfigTemplate(name);
     const styleTemplate = templates.getComponentStyleTemplate(name, style);
 
     filesToCreate.push(
       { path: path.join(componentDir, 'index.vue'), content: vueTemplate },
-      { path: path.join(componentDir, 'index.config.js'), content: configTemplate },
       { path: path.join(componentDir, `index.module.${style}`), content: styleTemplate }
     );
   }
