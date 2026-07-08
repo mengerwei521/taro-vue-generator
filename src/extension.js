@@ -659,10 +659,12 @@ async function handleGenerate(uri, type, isCustom = false) {
       vueTemplate = templates.getComponentTemplate(name, { vueVersion, language, style }, routePath);
     }
 
+    const configTemplate = templates.getComponentConfigTemplate(name);
     const styleTemplate = templates.getComponentStyleTemplate(name, style);
 
     filesToCreate.push(
       { path: path.join(componentDir, 'index.vue'), content: vueTemplate },
+      { path: path.join(componentDir, 'index.config.js'), content: configTemplate },
       { path: path.join(componentDir, `index.module.${style}`), content: styleTemplate }
     );
   }
